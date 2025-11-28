@@ -13,29 +13,29 @@ function App() {
       <div className="app">
         <nav className="navbar">
           <div className="nav-brand">
-            <Bot size={32} />
-            <h1>AI Web App</h1>
+            <Bot size={36} />
+            <h1>AI Delights</h1>
           </div>
           <div className="nav-links">
             <Link to="/" className="nav-link">
               <Home size={20} />
-              Home
+              <span>Home</span>
             </Link>
             <Link to="/chat" className="nav-link">
               <MessageSquare size={20} />
-              Chatbot
+              <span>Chat</span>
             </Link>
             <Link to="/sentiment" className="nav-link">
               <TrendingUp size={20} />
-              Sentiment
+              <span>Sentiment</span>
             </Link>
             <Link to="/document" className="nav-link">
               <FileText size={20} />
-              Summarize
+              <span>Document</span>
             </Link>
             <Link to="/image" className="nav-link">
               <Image size={20} />
-              Image AI
+              <span>Image</span>
             </Link>
           </div>
         </nav>

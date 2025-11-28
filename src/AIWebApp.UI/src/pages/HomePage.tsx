@@ -4,10 +4,12 @@ import { MessageSquare, TrendingUp, FileText, Image, Sparkles } from 'lucide-rea
 function HomePage() {
   return (
     <div className="page-container">
-      <h1 className="page-title">Welcome to AI-Powered Web App</h1>
-      <p className="page-subtitle">
-        Experience the power of artificial intelligence with our suite of AI tools.
-        Choose a feature below to get started.
+      <h1 className="page-title" style={{ marginBottom: '0.5rem' }}>
+        Your AI-Powered <span style={{ color: '#EF233C' }}>Delights</span>
+      </h1>
+      <p className="page-subtitle" style={{ marginBottom: '2rem' }}>
+        Journey through our AI features, a haven for intelligent solutions,
+        text analysis, and document processing - where every feature is pure excellence
       </p>
 
       <div className="feature-grid">
@@ -37,10 +39,10 @@ function HomePage() {
       </div>
 
       <div style={{ marginTop: '3rem', textAlign: 'center' }}>
-        <Sparkles size={32} style={{ color: '#667eea', marginBottom: '1rem' }} />
-        <h2>Powered by OpenAI GPT-4</h2>
-        <p style={{ opacity: 0.7, marginTop: '0.5rem' }}>
-          Built with .NET 8, ASP.NET Core, React, and OpenAI
+        <Sparkles size={36} style={{ color: '#EF233C', marginBottom: '1rem' }} />
+        <h2 style={{ color: '#4A1C1C', marginBottom: '0.5rem' }}>Powered by Google Gemini AI</h2>
+        <p style={{ color: '#6B3030', opacity: 0.8, marginTop: '0.5rem' }}>
+          Built with .NET 10, ASP.NET Core, React, and Google Gemini
         </p>
       </div>
     </div>
