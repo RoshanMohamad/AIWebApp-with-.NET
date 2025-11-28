@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { Upload } from 'lucide-react';
 import { imageApi, ImageAnalysisResult } from '../api/api';
 
 function ImagePage() {

@@ -2,6 +2,7 @@ using System.Text.Json;
 using AIWebApp.Core.Interfaces;
 using AIWebApp.Core.Models;
 using OpenAI.Chat;
+using ChatMessage = AIWebApp.Core.Models.ChatMessage;
 
 namespace AIWebApp.Infrastructure.Services;
 
@@ -140,13 +141,13 @@ public class OpenAIService : IAIService
             var response = completion.Value.Content[0].Text;
 
             // Parse JSON response
-            var imageData = JsonSerializer.Deserialize<ImageJsonResponse>(response);
+            var analysisResult = JsonSerializer.Deserialize<ImageJsonResponse>(response);
 
             return new ImageAnalysisResult
             {
-                Description = imageData?.Description ?? "Unable to analyze image",
-                Tags = imageData?.Tags ?? new List<string>(),
-                Objects = imageData?.Objects?.Select(o => new DetectedObject
+                Description = analysisResult?.Description ?? "Unable to analyze image",
+                Tags = analysisResult?.Tags ?? new List<string>(),
+                Objects = analysisResult?.Objects?.Select(o => new DetectedObject
                 {
                     Name = o.Name,
                     Confidence = o.Confidence

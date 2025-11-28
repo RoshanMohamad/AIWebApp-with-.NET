@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { Upload } from 'lucide-react';
 import { documentApi, DocumentSummary } from '../api/api';
 
 function DocumentPage() {
