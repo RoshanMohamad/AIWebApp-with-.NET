@@ -30,14 +30,14 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
 // AI Service
-var openAIKey = builder.Configuration["OpenAI:ApiKey"];
-if (string.IsNullOrEmpty(openAIKey))
+var geminiKey = builder.Configuration["Gemini:ApiKey"];
+if (string.IsNullOrEmpty(geminiKey))
 {
-    throw new Exception("OpenAI API Key not found in configuration!");
+    throw new Exception("Gemini API Key not found in configuration!");
 }
 
 builder.Services.AddSingleton<IAIService>(sp =>
-    new OpenAIService(openAIKey, builder.Configuration["OpenAI:Model"] ?? "gpt-4o"));
+    new GeminiService(geminiKey, builder.Configuration["Gemini:Model"] ?? "gemini-2.0-flash-exp"));
 
 var app = builder.Build();
 
