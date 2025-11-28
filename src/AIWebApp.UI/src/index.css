@@ -4,6 +4,11 @@
   box-sizing: border-box;
 }
 
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 :root {
   font-family: 'Poppins', Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -30,9 +35,12 @@
 
 body {
   margin: 0;
+  padding: 0;
   display: flex;
   min-width: 320px;
   min-height: 100vh;
+  width: 100%;
+  max-width: 100vw;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -41,6 +49,18 @@ body {
 html {
   font-size: 16px;
   scroll-behavior: smooth;
+  overflow-x: hidden;
+  width: 100%;
+  max-width: 100vw;
+}
+
+#root {
+  width: 100%;
+  max-width: 100vw;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
 }
 
 /* Ensure images are responsive */
@@ -48,6 +68,7 @@ img {
   max-width: 100%;
   height: auto;
   display: block;
+  object-fit: contain;
 }
 
 /* Better touch targets on mobile */
@@ -104,6 +125,17 @@ input, textarea {
   background-color: var(--white);
   color: #2D2D2D;
   transition: all 0.3s ease;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+p, li, span, div {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
 }
 
 input:hover,
@@ -113,4 +145,31 @@ textarea:focus {
   border-color: var(--primary-red);
   outline: none;
   box-shadow: 0 0 0 3px rgba(239, 35, 60, 0.1);
+}
+
+/* Responsive image constraints */
+.result-card img,
+.page-container img {
+  max-width: 100%;
+  max-height: min(70vh, 600px);
+  width: auto;
+  height: auto;
+  margin: 0 auto;
+  border-radius: 12px;
+  object-fit: contain;
+}
+
+@media (max-width: 768px) {
+  .result-card img,
+  .page-container img {
+    max-height: min(50vh, 400px);
+  }
+}
+
+@media (max-width: 480px) {
+  .result-card img,
+  .page-container img {
+    max-height: min(40vh, 300px);
+    border-radius: 8px;
+  }
 }
