@@ -28,7 +28,12 @@ else
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add environment variables to configuration
+// Configuration priority (last one wins):
+// 1. appsettings.json
+// 2. appsettings.Development.json
+// 3. User Secrets (Development only) - already loaded by CreateBuilder
+// 4. Environment variables
+// 5. .env file (custom)
 builder.Configuration.AddEnvironmentVariables();
 
 // Add services to the container
@@ -56,13 +61,15 @@ builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
 // AI Service
 var geminiKey = builder.Configuration["Gemini:ApiKey"];
+Console.WriteLine($"📌 Gemini API Key loaded: {(string.IsNullOrEmpty(geminiKey) ? "MISSING" : $"{geminiKey.Substring(0, Math.Min(10, geminiKey.Length))}...")}");
+
 if (string.IsNullOrEmpty(geminiKey))
 {
-    throw new Exception("Gemini API Key not found in configuration!");
+    throw new Exception("Gemini API Key not found in configuration! Make sure to set it using: dotnet user-secrets set \"Gemini:ApiKey\" \"your-key\"");
 }
 
 builder.Services.AddSingleton<IAIService>(sp =>
-    new GeminiService(geminiKey, builder.Configuration["Gemini:Model"] ?? "gemini-2.0-pro"));
+    new GeminiService(geminiKey, builder.Configuration["Gemini:Model"] ?? "gemini-2.0-flash-exp"));
 
 var app = builder.Build();
 

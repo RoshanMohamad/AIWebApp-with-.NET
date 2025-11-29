@@ -123,8 +123,8 @@ Text to analyze: {text}";
     {
         try
         {
-            // Use the default generative model from the client
-            var model = _geminiClient.GenerativeModel();
+            // Use the configured generative model
+            var model = _geminiClient.GenerativeModel(model: _model);
             
             // Convert image to base64
             var base64Image = Convert.ToBase64String(imageBytes);
