@@ -58,8 +58,8 @@ obj/
 .env.production
 
 # Application settings with secrets (keep appsettings.json with placeholders)
-appsettings.Development.json
-appsettings.json
+AIWebApp.API/appsettings.example.json
+AIWebApp.API/appsettings.json
 
 # Build results
 [Dd]ebug/
