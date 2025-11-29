@@ -57,9 +57,9 @@ obj/
 .env.local
 .env.production
 
-# Application settings with secrets (DO NOT COMMIT)
-src/AIWebApp.API/appsettings.json
-src/AIWebApp.API/appsettings.Production.json
+# Application settings with secrets (keep appsettings.json with placeholders)
+appsettings.Development.json
+appsettings.json
 
 # Build results
 [Dd]ebug/
