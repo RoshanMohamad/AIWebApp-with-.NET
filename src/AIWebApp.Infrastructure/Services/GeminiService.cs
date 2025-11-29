@@ -119,29 +119,116 @@ Text to analyze: {text}";
         }
     }
 
-    public async Task<ImageAnalysisResult> AnalyzeImageAsync(byte[] imageData)
+    public async Task<ImageAnalysisResult> AnalyzeImageAsync(byte[] imageBytes)
     {
         try
         {
-            // For now, return a placeholder since image analysis with Gemini requires more complex setup
-            await Task.CompletedTask;
+            // Use the default generative model from the client
+            var model = _geminiClient.GenerativeModel();
             
+            // Convert image to base64
+            var base64Image = Convert.ToBase64String(imageBytes);
+            
+            // Determine image MIME type (default to JPEG if unknown)
+            var mimeType = "image/jpeg";
+            if (imageBytes.Length > 2)
+            {
+                // PNG signature
+                if (imageBytes[0] == 0x89 && imageBytes[1] == 0x50)
+                    mimeType = "image/png";
+                // GIF signature
+                else if (imageBytes[0] == 0x47 && imageBytes[1] == 0x49)
+                    mimeType = "image/gif";
+                // WebP signature
+                else if (imageBytes[0] == 0x52 && imageBytes[1] == 0x49)
+                    mimeType = "image/webp";
+            }
+            
+            var prompt = @"Analyze this image in detail and provide a comprehensive response in JSON format with the following structure:
+{
+    ""description"": ""A detailed, comprehensive description of what you see in the image. Include colors, objects, people, activities, mood, composition, and any notable features. Be descriptive and thorough (3-5 sentences)."",
+    ""tags"": [""list"", ""of"", ""relevant"", ""keywords"", ""and"", ""tags""],
+    ""objects"": [
+        {""name"": ""object1"", ""confidence"": 0.95},
+        {""name"": ""object2"", ""confidence"": 0.87}
+    ],
+    ""scene"": ""The overall scene or setting (indoor/outdoor, location type, time of day if visible)"",
+    ""colors"": [""dominant"", ""color"", ""palette""],
+    ""mood"": ""The emotional tone or atmosphere of the image"",
+    ""details"": ""Any interesting or unique details worth noting""
+}
+
+Provide accurate and detailed analysis. For confidence scores, use values between 0.70 and 0.99 based on how certain you are about each object.";
+
+            // Create request with text and image
+            var request = new GenerateContentRequest
+            {
+                Contents = new List<Content>
+                {
+                    new Content
+                    {
+                        Parts = new List<IPart>
+                        {
+                            new TextData { Text = prompt },
+                            new InlineData { MimeType = mimeType, Data = base64Image }
+                        }
+                    }
+                }
+            };
+            
+            var response = await model.GenerateContent(request);
+            var responseText = response.Text ?? "{}";
+            
+            // Extract JSON from response
+            var jsonStart = responseText.IndexOf('{');
+            var jsonEnd = responseText.LastIndexOf('}');
+            if (jsonStart >= 0 && jsonEnd > jsonStart)
+            {
+                responseText = responseText.Substring(jsonStart, jsonEnd - jsonStart + 1);
+            }
+
+            var imageData = JsonSerializer.Deserialize<ImageJsonResponse>(responseText);
+
+            // Build a comprehensive description
+            var fullDescription = imageData?.Description ?? "Unable to analyze image";
+            
+            if (!string.IsNullOrEmpty(imageData?.Scene))
+            {
+                fullDescription += $"\n\nScene: {imageData.Scene}";
+            }
+            
+            if (imageData?.Colors?.Count > 0)
+            {
+                fullDescription += $"\n\nColor Palette: {string.Join(", ", imageData.Colors)}";
+            }
+            
+            if (!string.IsNullOrEmpty(imageData?.Mood))
+            {
+                fullDescription += $"\n\nMood/Atmosphere: {imageData.Mood}";
+            }
+            
+            if (!string.IsNullOrEmpty(imageData?.Details))
+            {
+                fullDescription += $"\n\nNotable Details: {imageData.Details}";
+            }
+
             return new ImageAnalysisResult
             {
-                Description = "Image analysis is being processed. This feature uses Google Gemini's vision capabilities.",
-                Tags = new List<string> { "image", "analysis", "gemini" },
-                Objects = new List<DetectedObject>
-                {
-                    new DetectedObject { Name = "Vision API", Confidence = 0.95 }
-                }
+                Description = fullDescription,
+                Tags = imageData?.Tags ?? new List<string>(),
+                Objects = imageData?.Objects?.Select(o => new DetectedObject 
+                { 
+                    Name = o.Name, 
+                    Confidence = o.Confidence 
+                }).ToList() ?? new List<DetectedObject>()
             };
         }
         catch (Exception ex)
         {
             return new ImageAnalysisResult
             {
-                Description = $"Error analyzing image: {ex.Message}",
-                Tags = new List<string>(),
+                Description = $"Error analyzing image: {ex.Message}. Please ensure the image is in a supported format (JPEG, PNG, GIF, WebP) and try again.",
+                Tags = new List<string> { "error" },
                 Objects = new List<DetectedObject>()
             };
         }
@@ -216,6 +303,10 @@ Document to summarize:
         public string Description { get; set; } = string.Empty;
         public List<string> Tags { get; set; } = new();
         public List<ObjectJson> Objects { get; set; } = new();
+        public string Scene { get; set; } = string.Empty;
+        public List<string> Colors { get; set; } = new();
+        public string Mood { get; set; } = string.Empty;
+        public string Details { get; set; } = string.Empty;
     }
 
     private class ObjectJson

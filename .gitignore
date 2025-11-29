@@ -55,10 +55,11 @@ obj/
 # Environment files
 .env
 .env.local
-.env.example
 .env.production
-appsettings.Development.json
-appsettings.Production.json
+
+# Application settings with secrets (DO NOT COMMIT)
+src/AIWebApp.API/appsettings.json
+src/AIWebApp.API/appsettings.Production.json
 
 # Build results
 [Dd]ebug/

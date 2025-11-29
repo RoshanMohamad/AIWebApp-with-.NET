@@ -62,7 +62,7 @@ if (string.IsNullOrEmpty(geminiKey))
 }
 
 builder.Services.AddSingleton<IAIService>(sp =>
-    new GeminiService(geminiKey, builder.Configuration["Gemini:Model"] ?? "gemini-2.0-flash-exp"));
+    new GeminiService(geminiKey, builder.Configuration["Gemini:Model"] ?? "gemini-2.0-pro"));
 
 var app = builder.Build();
 

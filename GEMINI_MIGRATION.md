@@ -18,7 +18,7 @@ Successfully migrated the AI-Powered Web App from OpenAI to Google Gemini API.
 ```json
 {
   "Gemini": {
-    "ApiKey": "AIzaSyBHmx4RKAD_xa6tPSOdn4qPluGLfDBusfQ",
+    "ApiKey": "your-gemini-api-key-here",
     "Model": "gemini-2.0-flash-exp"
   }
 }
