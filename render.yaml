@@ -1,0 +1,28 @@
+services:
+  - type: web
+    name: aiwebapp-api
+    env: docker
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: ASPNETCORE_URLS
+        value: http://+:5000
+      - key: Gemini__ApiKey
+        sync: false
+      - key: Gemini__Model
+        value: gemini-2.0-flash-exp
+    healthCheckPath: /
+    
+  - type: web
+    name: aiwebapp-ui
+    env: docker
+    dockerfilePath: ./src/AIWebApp.UI/Dockerfile.ui
+    dockerContext: ./src/AIWebApp.UI
+    envVars:
+      - key: API_URL
+        fromService:
+          name: aiwebapp-api
+          type: web
+          property: host

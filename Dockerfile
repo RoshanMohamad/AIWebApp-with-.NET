@@ -2,15 +2,18 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
+# Copy solution file
+COPY ["AIWebApp.sln", "./"]
+
 # Copy csproj files and restore dependencies
-COPY ["src/AIWebApp.API/AIWebApp.API.csproj", "AIWebApp.API/"]
-COPY ["src/AIWebApp.Core/AIWebApp.Core.csproj", "AIWebApp.Core/"]
-COPY ["src/AIWebApp.Infrastructure/AIWebApp.Infrastructure.csproj", "AIWebApp.Infrastructure/"]
-RUN dotnet restore "AIWebApp.API/AIWebApp.API.csproj"
+COPY ["src/AIWebApp.API/AIWebApp.API.csproj", "src/AIWebApp.API/"]
+COPY ["src/AIWebApp.Core/AIWebApp.Core.csproj", "src/AIWebApp.Core/"]
+COPY ["src/AIWebApp.Infrastructure/AIWebApp.Infrastructure.csproj", "src/AIWebApp.Infrastructure/"]
+RUN dotnet restore "src/AIWebApp.API/AIWebApp.API.csproj"
 
 # Copy everything else and build
-COPY src/ .
-WORKDIR "/src/AIWebApp.API"
+COPY . .
+WORKDIR "/src/src/AIWebApp.API"
 RUN dotnet build "AIWebApp.API.csproj" -c Release -o /app/build
 
 # Publish

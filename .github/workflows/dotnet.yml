@@ -62,3 +62,63 @@ jobs:
       with:
         name: react-app
         path: src/AIWebApp.UI/dist
+
+  deploy:
+    name: Deploy to Production
+    needs: [build-and-test, build-frontend]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/backup-before-cleanup'
+    permissions:
+      contents: read
+      packages: write
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Download .NET artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: dotnet-app
+        path: ./publish
+    
+    - name: Set lowercase repository owner
+      id: lowercase
+      run: echo "owner=$(echo ${{ github.repository_owner }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
+    
+    - name: Login to GitHub Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        push: true
+        tags: |
+          ghcr.io/${{ steps.lowercase.outputs.owner }}/aiwebapp:latest
+          ghcr.io/${{ steps.lowercase.outputs.owner }}/aiwebapp:${{ github.sha }}
+      env:
+        DOCKER_BUILDKIT: 1
+    
+    # Uncomment and configure for Railway deployment
+    # - name: Deploy to Railway
+    #   uses: bervProject/railway-deploy@main
+    #   with:
+    #     railway_token: ${{ secrets.RAILWAY_TOKEN }}
+    #     service: aiwebapp-api
+    
+    # Uncomment for Azure deployment
+    # - name: Deploy to Azure Web App
+    #   uses: azure/webapps-deploy@v2
+    #   with:
+    #     app-name: 'your-app-name'
+    #     publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+    #     package: ./publish
+    
+    # Uncomment for Render deployment
+    # - name: Deploy to Render
+    #   run: |
+    #     curl -X POST "https://api.render.com/deploy/srv-xxxxx?key=${{ secrets.RENDER_DEPLOY_HOOK }}"
