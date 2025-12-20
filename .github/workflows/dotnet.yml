@@ -78,6 +78,10 @@ jobs:
         name: dotnet-app
         path: ./publish
     
+    - name: Set lowercase repository owner
+      id: lowercase
+      run: echo "owner=$(echo ${{ github.repository_owner }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
+    
     - name: Login to GitHub Container Registry
       uses: docker/login-action@v3
       with:
@@ -91,8 +95,10 @@ jobs:
         context: .
         push: true
         tags: |
-          ghcr.io/${{ github.repository_owner }}/aiwebapp:latest
-          ghcr.io/${{ github.repository_owner }}/aiwebapp:${{ github.sha }}
+          ghcr.io/${{ steps.lowercase.outputs.owner }}/aiwebapp:latest
+          ghcr.io/${{ steps.lowercase.outputs.owner }}/aiwebapp:${{ github.sha }}
+      env:
+        DOCKER_BUILDKIT: 1
     
     # Uncomment and configure for Railway deployment
     # - name: Deploy to Railway
