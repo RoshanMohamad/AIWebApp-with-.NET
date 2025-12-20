@@ -68,6 +68,9 @@ jobs:
     needs: [build-and-test, build-frontend]
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/backup-before-cleanup'
+    permissions:
+      contents: read
+      packages: write
     
     steps:
     - uses: actions/checkout@v4
