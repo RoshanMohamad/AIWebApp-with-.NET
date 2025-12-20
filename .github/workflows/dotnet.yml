@@ -1,0 +1,64 @@
+name: .NET CI/CD
+
+on:
+  push:
+    branches: [ main, backup-before-cleanup ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'
+    
+    - name: Restore dependencies
+      run: dotnet restore
+    
+    - name: Build
+      run: dotnet build --no-restore --configuration Release
+    
+    - name: Test
+      run: dotnet test --no-build --verbosity normal --configuration Release
+    
+    - name: Publish
+      run: dotnet publish src/AIWebApp.API/AIWebApp.API.csproj -c Release -o ./publish
+    
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: dotnet-app
+        path: ./publish
+
+  build-frontend:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: src/AIWebApp.UI/package-lock.json
+    
+    - name: Install dependencies
+      working-directory: src/AIWebApp.UI
+      run: npm ci
+    
+    - name: Build
+      working-directory: src/AIWebApp.UI
+      run: npm run build
+    
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: react-app
+        path: src/AIWebApp.UI/dist
