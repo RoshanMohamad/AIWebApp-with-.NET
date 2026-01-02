@@ -1,0 +1,40 @@
+version: '3.8'
+
+# Development compose: mounts source for live reload and reads .env for secrets
+env_file:
+  - .env
+
+services:
+  api:
+    image: mcr.microsoft.com/dotnet/sdk:8.0
+    ports:
+      - "5000:5000"
+      - "5001:5001"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:5000
+      - Gemini__ApiKey=${GEMINI_API_KEY}
+      - Gemini__Model=gemini-2.0-flash-exp
+    volumes:
+      - ./src/AIWebApp.API:/src/src/AIWebApp.API:rw
+      - ./src/AIWebApp.Core:/src/src/AIWebApp.Core:ro
+      - ./src/AIWebApp.Infrastructure:/src/src/AIWebApp.Infrastructure:ro
+      - ./data:/app/data
+    working_dir: /src/src/AIWebApp.API
+    command: dotnet watch run --urls http://+:5000
+    restart: unless-stopped
+    
+  ui:
+    image: node:18
+    working_dir: /app
+    volumes:
+      - ./src/AIWebApp.UI:/app:rw
+      - /app/node_modules
+    ports:
+      - "3000:3000"
+    environment:
+      - VITE_API_BASE_URL=http://api:5000/api
+    command: sh -c "npm ci && npm run dev -- --host 0.0.0.0 --port 3000"
+    depends_on:
+      - api
+    restart: unless-stopped

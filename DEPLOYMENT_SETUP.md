@@ -86,6 +86,17 @@ az webapp deployment list-publishing-profiles --resource-group MyResourceGroup -
 ### Add These Secrets (Based on Platform)
 Go to: https://github.com/RoshanMohamad/AIWebApp-with-.NET/settings/secrets/actions
 
+**Core secret (required for app functionality):**
+- `GEMINI_API_KEY` - your Gemini API key (used at runtime by the API). Add this in GitHub Secrets and to any hosting platform environment variables.
+
+You can add the secret using the GitHub CLI (`gh`) locally:
+```bash
+gh auth login
+gh secret set GEMINI_API_KEY --body "YOUR_GEMINI_KEY" --repo RoshanMohamad/AIWebApp-with-.NET
+```
+
+Or via the GitHub UI: Repository → Settings → Secrets & variables → Actions → New repository secret → `GEMINI_API_KEY`
+
 **For Railway:**
 - `RAILWAY_TOKEN` - Get from https://railway.app/account/tokens
 
