@@ -71,6 +71,9 @@ jobs:
     permissions:
       contents: read
       packages: write
+    env:
+      # Make the Gemini API key available to deploy steps (set this secret in the repo)
+      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
     
     steps:
     - uses: actions/checkout@v4
